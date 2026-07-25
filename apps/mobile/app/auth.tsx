@@ -1,14 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, registerSchema, type Role } from "@trimly/contracts";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import { useState } from "react";
 import { Controller, useForm, type Resolver } from "react-hook-form";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { z } from "zod";
 import { api, getErrorMessage } from "../src/api";
 import { Button, Field, Screen } from "../src/components";
 import { useAuth } from "../src/store";
-import { colors, radius } from "../src/theme";
-import { useState } from "react";
+import { colors, radius, shadow, textDisplay, type } from "../src/theme";
 
 type FormValues = z.infer<typeof registerSchema>;
 
@@ -41,101 +42,141 @@ export default function AuthScreen() {
   return (
     <Screen>
       <View style={styles.hero}>
-        <View style={styles.mark}><Text style={styles.markText}>T</Text></View>
-        <Text style={styles.brand}>trimly</Text>
+        <LinearGradient
+          colors={[colors.ink, colors.inkSoft, "#2A2418"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFillObject}
+        />
+        <View style={styles.heroGlow} />
+        <Text style={styles.brand}>TRIMLY</Text>
         <Text style={styles.title}>{mode === "login" ? "Good hair day?" : "Let’s get you booked."}</Text>
-        <Text style={styles.copy}>Discover great stylists and reserve a time without the phone calls.</Text>
+        <Text style={styles.copy}>Discover sharp stylists. Reserve real slots. Skip the phone tag.</Text>
       </View>
 
-      <View style={styles.form}>
-        {mode === "register" && (
-          <>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field }) => (
-                <Field label="Name" value={field.value} onChangeText={field.onChange} error={errors.name?.message} />
-              )}
-            />
-            <Text style={styles.label}>I’m joining as</Text>
-            <View style={styles.roles}>
-              {(["customer", "owner"] as Role[]).map((value) => (
-                <Pressable
-                  key={value}
-                  onPress={() => setValue("role", value)}
-                  style={[styles.role, role === value && styles.roleActive]}
-                >
-                  <Text style={styles.roleText}>{value === "customer" ? "Customer" : "Salon owner"}</Text>
-                </Pressable>
-              ))}
-            </View>
-          </>
-        )}
-        <Controller
-          control={control}
-          name="email"
-          render={({ field }) => (
-            <Field
-              label="Email"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              value={field.value}
-              onChangeText={field.onChange}
-              error={errors.email?.message}
-            />
+      <View style={styles.sheet}>
+        <View style={styles.modeRow}>
+          {(["login", "register"] as const).map((value) => (
+            <Pressable key={value} onPress={() => setMode(value)} style={[styles.mode, mode === value && styles.modeActive]}>
+              <Text style={[styles.modeText, mode === value && styles.modeTextActive]}>
+                {value === "login" ? "Sign in" : "Join"}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <View style={styles.form}>
+          {mode === "register" && (
+            <>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <Field label="Name" value={field.value} onChangeText={field.onChange} error={errors.name?.message} />
+                )}
+              />
+              <Text style={styles.label}>I’m joining as</Text>
+              <View style={styles.roles}>
+                {(["customer", "owner"] as Role[]).map((value) => (
+                  <Pressable
+                    key={value}
+                    onPress={() => setValue("role", value)}
+                    style={[styles.role, role === value && styles.roleActive]}
+                  >
+                    <Text style={[styles.roleText, role === value && styles.roleTextActive]}>
+                      {value === "customer" ? "Customer" : "Salon owner"}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </>
           )}
-        />
-        <Controller
-          control={control}
-          name="password"
-          render={({ field }) => (
-            <Field
-              label="Password"
-              secureTextEntry
-              value={field.value}
-              onChangeText={field.onChange}
-              error={errors.password?.message}
-            />
-          )}
-        />
-        <Button title={mode === "login" ? "Sign in" : "Create account"} onPress={submit} loading={isSubmitting} />
-        <Pressable onPress={() => setMode(mode === "login" ? "register" : "login")}>
-          <Text style={styles.switch}>
-            {mode === "login" ? "New here? Create an account" : "Already have an account? Sign in"}
-          </Text>
-        </Pressable>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field }) => (
+              <Field
+                label="Email"
+                autoCapitalize="none"
+                keyboardType="email-address"
+                value={field.value}
+                onChangeText={field.onChange}
+                error={errors.email?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field }) => (
+              <Field
+                label="Password"
+                secureTextEntry
+                value={field.value}
+                onChangeText={field.onChange}
+                error={errors.password?.message}
+              />
+            )}
+          />
+          <Button title={mode === "login" ? "Continue" : "Create account"} onPress={submit} loading={isSubmitting} />
+        </View>
       </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  hero: { paddingTop: 42, paddingBottom: 32, gap: 10 },
-  mark: {
-    width: 54,
-    height: 54,
-    borderRadius: 18,
-    backgroundColor: colors.yellow,
-    alignItems: "center",
-    justifyContent: "center",
+  hero: {
+    marginHorizontal: -20,
+    marginTop: -8,
+    paddingHorizontal: 24,
+    paddingTop: 56,
+    paddingBottom: 40,
+    gap: 12,
+    overflow: "hidden",
+    borderBottomLeftRadius: radius.xl,
+    borderBottomRightRadius: radius.xl,
   },
-  markText: { color: colors.ink, fontWeight: "900", fontSize: 26 },
-  brand: { color: colors.ink, fontWeight: "900", fontSize: 18, letterSpacing: 1 },
-  title: { color: colors.ink, fontWeight: "900", fontSize: 38, lineHeight: 42, marginTop: 10 },
-  copy: { color: colors.muted, fontSize: 16, lineHeight: 24, maxWidth: 330 },
-  form: { gap: 17 },
-  label: { color: colors.ink, fontSize: 13, fontWeight: "700", marginBottom: -8 },
+  heroGlow: {
+    position: "absolute",
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: colors.yellow,
+    opacity: 0.18,
+    top: -40,
+    right: -50,
+  },
+  brand: { ...type.brand, color: colors.yellowHot },
+  title: { ...textDisplay({ fontSize: 40, lineHeight: 44, color: "#fff", letterSpacing: -1 }) },
+  copy: { color: "rgba(255,255,255,0.72)", fontSize: 15, lineHeight: 22, maxWidth: 300, fontWeight: "500" },
+  sheet: { marginTop: 28, gap: 22 },
+  modeRow: {
+    flexDirection: "row",
+    padding: 5,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.line,
+  },
+  mode: { flex: 1, paddingVertical: 12, borderRadius: radius.pill, alignItems: "center" },
+  modeActive: { backgroundColor: colors.ink, ...shadow.soft },
+  modeText: { color: colors.muted, fontWeight: "800", fontSize: 13 },
+  modeTextActive: { color: colors.yellowHot },
+  form: { gap: 16 },
+  label: { ...type.label, color: colors.inkSoft, marginBottom: -4 },
   roles: { flexDirection: "row", gap: 10 },
   role: {
     flex: 1,
-    padding: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
     borderRadius: radius.sm,
     borderWidth: 1,
     borderColor: colors.line,
     backgroundColor: colors.surface,
     alignItems: "center",
   },
-  roleActive: { backgroundColor: colors.yellowSoft, borderColor: colors.yellow },
-  roleText: { color: colors.ink, fontWeight: "700" },
-  switch: { textAlign: "center", color: colors.ink, fontWeight: "700", padding: 8 },
+  roleActive: { backgroundColor: colors.ink, borderColor: colors.ink },
+  roleText: { color: colors.ink, fontWeight: "700", fontSize: 13 },
+  roleTextActive: { color: colors.yellowHot },
 });

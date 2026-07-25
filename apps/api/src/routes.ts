@@ -1,6 +1,6 @@
 import { Router } from "express";
 import argon2 from "argon2";
-import { fromZonedTime } from "date-fns-tz";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import { z } from "zod";
 import {
   bookingSchema,
@@ -11,6 +11,7 @@ import {
   serviceSchema,
 } from "@trimly/contracts";
 import { allowRoles, createTokens, hashToken, requireAuth } from "./auth.js";
+import { seedDemoData } from "./demo-data.js";
 import { asyncHandler, notify, redis, validate, withLock } from "./lib.js";
 import {
   Booking,
@@ -70,6 +71,17 @@ router.post(
     const user = await User.findById(session.user);
     if (!user) return res.status(401).json({ error: "User no longer exists" });
     res.json(await createTokens(user));
+  }),
+);
+
+/** Wipe + reload apps/api/data/shops.json — disabled in production. */
+router.post(
+  "/dev/reseed",
+  asyncHandler(async (_req, res) => {
+    if (process.env.NODE_ENV === "production") {
+      return res.status(404).json({ error: "Not found" });
+    }
+    res.json(await seedDemoData({ reset: true }));
   }),
 );
 
@@ -301,9 +313,16 @@ router.post(
           startAt: { $lt: endAt },
           endAt: { $gt: startAt },
         });
-        const available = (await getAvailability(String(staff._id), String(service._id), startAt.toISOString().slice(0, 10)))
-          .some((slot) => slot.startAt === startAt.toISOString());
-        if (overlap || !available) {
+        if (overlap) {
+          throw Object.assign(new Error("That slot was just taken — pick another time"), { status: 409 });
+        }
+        // Use salon timezone date, not UTC — otherwise IST early slots fail the availability re-check
+        const localDate = formatInTimeZone(startAt, salon.timezone, "yyyy-MM-dd");
+        const startMs = startAt.getTime();
+        const available = (await getAvailability(String(staff._id), String(service._id), localDate)).some(
+          (slot) => Math.abs(new Date(slot.startAt).getTime() - startMs) < 1000,
+        );
+        if (!available) {
           throw Object.assign(new Error("That time is no longer available"), { status: 409 });
         }
         return Booking.create({

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, router, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -18,6 +18,7 @@ export default function RootLayout() {
   const hydrate = useAuth((state) => state.hydrate);
   const hydrated = useAuth((state) => state.hydrated);
   const user = useAuth((state) => state.user);
+  const segments = useSegments();
 
   useEffect(() => {
     hydrate();
@@ -30,6 +31,14 @@ export default function RootLayout() {
   useEffect(() => {
     if (user) void registerPushNotifications();
   }, [user]);
+
+  // Kick to auth when session dies (e.g. memory DB restart / expired refresh)
+  useEffect(() => {
+    if (!hydrated) return;
+    const inAuth = segments[0] === "auth";
+    const inDebug = segments[0] === "debug";
+    if (!user && !inAuth && !inDebug) router.replace("/auth");
+  }, [hydrated, user, segments]);
 
   if (!hydrated) return null;
 
@@ -50,8 +59,8 @@ export default function RootLayout() {
             <Stack.Screen name="auth" options={{ headerShown: false }} />
             <Stack.Screen name="(customer)" options={{ headerShown: false }} />
             <Stack.Screen name="(pro)" options={{ headerShown: false }} />
-            <Stack.Screen name="salon/[id]" options={{ title: "" }} />
-            <Stack.Screen name="book/[salonId]" options={{ title: "Choose a time" }} />
+            <Stack.Screen name="salon/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="book/[salonId]" options={{ title: "Book", headerBackTitle: "Back" }} />
             <Stack.Screen name="notifications" options={{ title: "Notifications" }} />
             <Stack.Screen name="debug" options={{ title: "Debug" }} />
           </Stack>

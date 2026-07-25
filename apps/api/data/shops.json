@@ -1,0 +1,197 @@
+[
+  {
+    "ownerEmail": "yellowchair@trimly.test",
+    "ownerName": "Maya Yellow",
+    "name": "The Yellow Chair",
+    "description": "Sharp cuts, warm service, zero waiting.",
+    "address": "12 Indiranagar Main Road",
+    "city": "Bengaluru",
+    "phone": "+91 98765 43210",
+    "images": [
+      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200",
+      "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=1200"
+    ],
+    "coordinates": [77.6408, 12.9784],
+    "rating": 4.9,
+    "reviewCount": 128,
+    "services": [
+      {
+        "name": "Signature Haircut",
+        "description": "Consultation, wash, cut and finish",
+        "durationMinutes": 45,
+        "bufferMinutes": 15,
+        "price": 699
+      },
+      {
+        "name": "Beard Sculpt",
+        "description": "Shape, hot towel and conditioning",
+        "durationMinutes": 30,
+        "bufferMinutes": 0,
+        "price": 399
+      }
+    ],
+    "staff": [
+      {
+        "name": "Kabir",
+        "title": "Senior Stylist",
+        "avatar": "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=400"
+      }
+    ]
+  },
+  {
+    "ownerEmail": "bombayblade@trimly.test",
+    "ownerName": "Vikram Blade",
+    "name": "Bombay Blade Co.",
+    "description": "Andheri classic barbershop — fades, shaves, strong chai.",
+    "address": "14 Lokhandwala Complex",
+    "city": "Mumbai",
+    "phone": "+91 98200 11122",
+    "images": [
+      "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200",
+      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200"
+    ],
+    "coordinates": [72.8296, 19.1364],
+    "rating": 4.7,
+    "reviewCount": 86,
+    "services": [
+      {
+        "name": "Skin Fade",
+        "description": "Precision fade with hot towel finish",
+        "durationMinutes": 40,
+        "bufferMinutes": 10,
+        "price": 599
+      },
+      {
+        "name": "Classic Shave",
+        "description": "Straight razor + aftershave",
+        "durationMinutes": 25,
+        "bufferMinutes": 5,
+        "price": 349
+      }
+    ],
+    "staff": [
+      {
+        "name": "Rohan",
+        "title": "Master Barber",
+        "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400"
+      }
+    ]
+  },
+  {
+    "ownerEmail": "bandracuts@trimly.test",
+    "ownerName": "Priya Bandra",
+    "name": "Bandra Cuts",
+    "description": "Neighbourhood studio for everyday grooming.",
+    "address": "21 Linking Road",
+    "city": "Mumbai",
+    "phone": "+91 98111 22334",
+    "images": [
+      "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=1200",
+      "https://images.unsplash.com/photo-1517832606299-7ae9b720a186?w=1200"
+    ],
+    "coordinates": [72.8362, 19.0596],
+    "rating": 4.6,
+    "reviewCount": 54,
+    "services": [
+      {
+        "name": "Wash & Cut",
+        "description": "Shampoo, cut, style",
+        "durationMinutes": 35,
+        "bufferMinutes": 10,
+        "price": 499
+      },
+      {
+        "name": "Kids Cut",
+        "description": "Under 12",
+        "durationMinutes": 25,
+        "bufferMinutes": 5,
+        "price": 299
+      }
+    ],
+    "staff": [
+      {
+        "name": "Aisha",
+        "title": "Stylist",
+        "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400"
+      }
+    ]
+  },
+  {
+    "ownerEmail": "northline@trimly.test",
+    "ownerName": "Arjun North",
+    "name": "North Line Salon",
+    "description": "Connaught Place walk-ins welcome.",
+    "address": "5 Block A, Connaught Place",
+    "city": "Delhi",
+    "phone": "+91 98100 44556",
+    "images": [
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200",
+      "https://images.unsplash.com/photo-1633681926022-84c232e38ac2?w=1200"
+    ],
+    "coordinates": [77.2167, 28.6315],
+    "rating": 4.5,
+    "reviewCount": 41,
+    "services": [
+      {
+        "name": "Executive Cut",
+        "description": "Office-ready cut & style",
+        "durationMinutes": 40,
+        "bufferMinutes": 10,
+        "price": 549
+      },
+      {
+        "name": "Beard Trim",
+        "description": "Line-up and oil",
+        "durationMinutes": 20,
+        "bufferMinutes": 0,
+        "price": 249
+      }
+    ],
+    "staff": [
+      {
+        "name": "Dev",
+        "title": "Barber",
+        "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400"
+      }
+    ]
+  },
+  {
+    "ownerEmail": "marinedrive@trimly.test",
+    "ownerName": "Sana Marine",
+    "name": "Marine Drive Grooming",
+    "description": "Sea-facing chairs, late hours on weekends.",
+    "address": "88 Marine Drive",
+    "city": "Mumbai",
+    "phone": "+91 98765 77889",
+    "images": [
+      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200",
+      "https://images.unsplash.com/photo-1621605815971-fbc45bd65522?w=1200"
+    ],
+    "coordinates": [72.8233, 18.9432],
+    "rating": 4.8,
+    "reviewCount": 97,
+    "services": [
+      {
+        "name": "Premium Cut",
+        "description": "Cut, wash, blow dry",
+        "durationMinutes": 50,
+        "bufferMinutes": 10,
+        "price": 799
+      },
+      {
+        "name": "Head Massage",
+        "description": "15-min add-on",
+        "durationMinutes": 15,
+        "bufferMinutes": 0,
+        "price": 199
+      }
+    ],
+    "staff": [
+      {
+        "name": "Neil",
+        "title": "Senior Stylist",
+        "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400"
+      }
+    ]
+  }
+]

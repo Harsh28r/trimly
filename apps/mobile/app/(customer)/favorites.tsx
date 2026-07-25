@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { api } from "../../src/api";
 import { EmptyState, SalonCard, Screen, type SalonSummary } from "../../src/components";
-import { colors } from "../../src/theme";
+import { textDisplay, type } from "../../src/theme";
 
 export default function FavoritesScreen() {
   const favorites = useQuery({
@@ -12,9 +12,10 @@ export default function FavoritesScreen() {
   });
   return (
     <Screen>
+      <Text style={styles.brand}>TRIMLY</Text>
       <Text style={styles.title}>Saved places</Text>
       <Text style={styles.copy}>Your shortlist for the next refresh.</Text>
-      <View style={{ gap: 18, marginTop: 24 }}>
+      <View style={{ gap: 20, marginTop: 24 }}>
         {favorites.data?.map(({ _id, salon }) => (
           <SalonCard key={_id} salon={salon} onPress={() => router.push(`/salon/${salon._id}`)} />
         ))}
@@ -27,6 +28,7 @@ export default function FavoritesScreen() {
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 31, lineHeight: 38, color: colors.ink, fontWeight: "900", paddingTop: 18 },
-  copy: { color: colors.muted, lineHeight: 21, marginTop: 5 },
+  brand: { ...type.brand, marginTop: 12 },
+  title: { ...textDisplay({ fontSize: 34, marginTop: 6 }) },
+  copy: { color: "#6F6A63", lineHeight: 21, marginTop: 6, fontWeight: "500" },
 });

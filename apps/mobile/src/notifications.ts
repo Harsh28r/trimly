@@ -2,16 +2,17 @@ import Constants, { ExecutionEnvironment } from "expo-constants";
 import { Platform } from "react-native";
 import { api } from "./api";
 
-/** Push remote APIs were removed from Expo Go (SDK 53+). Skip there. */
+/** Push remote APIs were removed from Expo Go (SDK 53+). Skip there + web. */
 const isExpoGo =
   Constants.appOwnership === "expo" ||
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
+const pushUnsupported = isExpoGo || Platform.OS === "web";
+
 let Notifications: typeof import("expo-notifications") | null = null;
 
-if (!isExpoGo) {
+if (!pushUnsupported) {
   try {
-    // Lazy require so Expo Go never evaluates the push stubs that throw.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     Notifications = require("expo-notifications");
     Notifications?.setNotificationHandler({
@@ -28,7 +29,7 @@ if (!isExpoGo) {
 }
 
 export async function registerPushNotifications() {
-  if (!Notifications || isExpoGo) return;
+  if (!Notifications || pushUnsupported) return;
 
   try {
     if (Platform.OS === "android") {

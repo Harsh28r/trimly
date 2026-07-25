@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { addDays, format } from "date-fns";
+import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { api, getErrorMessage } from "../../src/api";
 import { Button, Screen } from "../../src/components";
-import { colors, radius } from "../../src/theme";
+import { colors, radius, shadow, type } from "../../src/theme";
 
 type SalonDetail = {
   services: Array<{ _id: string; name: string; durationMinutes: number; price: number }>;
@@ -41,97 +43,222 @@ export default function BookingScreen() {
     mutationFn: () => api.post("/bookings", { salonId, staffId, serviceId, startAt }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert("You’re booked", "The salon will confirm your appointment shortly.", [
         { text: "View bookings", onPress: () => router.replace("/(customer)/appointments") },
       ]);
     },
-    onError: (error) => Alert.alert("Could not book", getErrorMessage(error)),
+    onError: (error) => {
+      const message = getErrorMessage(error);
+      void queryClient.invalidateQueries({ queryKey: ["availability"] });
+      Alert.alert("Could not book", message, [
+        {
+          text: "OK",
+          onPress: () => {
+            if (axios.isAxiosError(error) && error.response?.status === 401) {
+              router.replace("/auth");
+            }
+          },
+        },
+      ]);
+    },
   });
+
+  const step = !serviceId ? 1 : !staffId ? 2 : !startAt ? 3 : 4;
 
   return (
     <Screen>
-      <Text style={styles.heading}>Pick a service</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontal}>
-        {detail.data?.services.map((item) => (
-          <Pressable
-            key={item._id}
-            onPress={() => { setServiceId(item._id); setStaffId(undefined); setStartAt(undefined); }}
-            style={[styles.choice, serviceId === item._id && styles.choiceActive]}
-          >
-            <Text style={styles.choiceTitle}>{item.name}</Text>
-            <Text style={styles.choiceMeta}>{item.durationMinutes} min · ₹{item.price}</Text>
-          </Pressable>
+      <Text style={styles.kicker}>BOOKING</Text>
+      <Text style={styles.title}>Lock in your chair.</Text>
+      <View style={styles.steps}>
+        {[1, 2, 3].map((n) => (
+          <View key={n} style={[styles.stepDot, step >= n && styles.stepDotOn]} />
         ))}
-      </ScrollView>
+      </View>
 
-      <Text style={styles.heading}>Choose a stylist</Text>
+      <Text style={styles.heading}>1 · Service</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontal}>
-        {eligibleStaff.map((item) => (
-          <Pressable
-            key={item._id}
-            onPress={() => { setStaffId(item._id); setStartAt(undefined); }}
-            style={[styles.smallChoice, staffId === item._id && styles.choiceActive]}
-          >
-            <Text style={styles.choiceTitle}>{item.name}</Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-
-      <Text style={styles.heading}>Select a day</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontal}>
-        {dates.map((item) => {
-          const active = format(item, "yyyy-MM-dd") === format(date, "yyyy-MM-dd");
+        {detail.data?.services.map((item) => {
+          const active = serviceId === item._id;
           return (
-            <Pressable key={item.toISOString()} onPress={() => { setDate(item); setStartAt(undefined); }} style={[styles.date, active && styles.dateActive]}>
-              <Text style={styles.weekday}>{format(item, "EEE")}</Text>
-              <Text style={styles.day}>{format(item, "d")}</Text>
+            <Pressable
+              key={item._id}
+              onPress={() => {
+                void Haptics.selectionAsync();
+                setServiceId(item._id);
+                setStaffId(undefined);
+                setStartAt(undefined);
+              }}
+              style={[styles.choice, active && styles.choiceActive]}
+            >
+              <Text style={[styles.choiceTitle, active && styles.choiceTitleActive]}>{item.name}</Text>
+              <Text style={[styles.choiceMeta, active && styles.choiceMetaActive]}>
+                {item.durationMinutes} min · ₹{item.price}
+              </Text>
             </Pressable>
           );
         })}
       </ScrollView>
 
-      <Text style={styles.heading}>Available times</Text>
+      <Text style={styles.heading}>2 · Stylist</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontal}>
+        {eligibleStaff.map((item) => {
+          const active = staffId === item._id;
+          return (
+            <Pressable
+              key={item._id}
+              onPress={() => {
+                void Haptics.selectionAsync();
+                setStaffId(item._id);
+                setStartAt(undefined);
+              }}
+              style={[styles.smallChoice, active && styles.choiceActive]}
+            >
+              <Text style={[styles.choiceTitle, active && styles.choiceTitleActive]}>{item.name}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
+      <Text style={styles.heading}>3 · Day & time</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontal}>
+        {dates.map((item) => {
+          const active = format(item, "yyyy-MM-dd") === format(date, "yyyy-MM-dd");
+          return (
+            <Pressable
+              key={item.toISOString()}
+              onPress={() => {
+                setDate(item);
+                setStartAt(undefined);
+              }}
+              style={[styles.date, active && styles.dateActive]}
+            >
+              <Text style={[styles.weekday, active && styles.weekdayActive]}>{format(item, "EEE")}</Text>
+              <Text style={[styles.day, active && styles.dayActive]}>{format(item, "d")}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
       {!staffId || !serviceId ? (
-        <Text style={styles.hint}>Choose a service and stylist first.</Text>
+        <Text style={styles.hint}>Choose a service and stylist to see times.</Text>
       ) : (
         <View style={styles.slots}>
-          {availability.data?.map((slot) => (
-            <Pressable key={slot.startAt} onPress={() => setStartAt(slot.startAt)} style={[styles.slot, startAt === slot.startAt && styles.slotActive]}>
-              <Text style={styles.slotText}>{format(new Date(slot.startAt), "h:mm a")}</Text>
-            </Pressable>
-          ))}
-          {!availability.isLoading && !availability.data?.length && <Text style={styles.hint}>No slots left for this day.</Text>}
+          {availability.data?.map((slot) => {
+            const active = startAt === slot.startAt;
+            return (
+              <Pressable
+                key={slot.startAt}
+                onPress={() => {
+                  void Haptics.selectionAsync();
+                  setStartAt(slot.startAt);
+                }}
+                style={[styles.slot, active && styles.slotActive]}
+              >
+                <Text style={[styles.slotText, active && styles.slotTextActive]}>
+                  {format(new Date(slot.startAt), "h:mm a")}
+                </Text>
+              </Pressable>
+            );
+          })}
+          {!availability.isLoading && !availability.data?.length && (
+            <Text style={styles.hint}>No slots left for this day.</Text>
+          )}
         </View>
       )}
+
       <View style={styles.summary}>
         <View>
           <Text style={styles.summaryLabel}>PAY AT SALON</Text>
-          <Text style={styles.summaryPrice}>{service ? `₹${service.price}` : "Select service"}</Text>
+          <Text style={styles.summaryPrice}>{service ? `₹${service.price}` : "—"}</Text>
         </View>
-        <View style={{ flex: 1 }}><Button title="Confirm booking" disabled={!startAt} loading={book.isPending} onPress={() => book.mutate()} /></View>
+        <View style={{ flex: 1 }}>
+          <Button
+            title="Confirm booking"
+            variant="dark"
+            disabled={!startAt}
+            loading={book.isPending}
+            onPress={() => book.mutate()}
+          />
+        </View>
       </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  heading: { color: colors.ink, fontSize: 20, fontWeight: "900", marginTop: 24, marginBottom: 12 },
-  horizontal: { gap: 10 },
-  choice: { width: 190, minHeight: 78, justifyContent: "center", padding: 15, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
-  choiceActive: { borderColor: colors.yellow, backgroundColor: colors.yellowSoft },
-  choiceTitle: { color: colors.ink, fontWeight: "800" },
-  choiceMeta: { color: colors.muted, fontSize: 12, marginTop: 5 },
-  smallChoice: { paddingHorizontal: 18, minHeight: 50, justifyContent: "center", borderRadius: radius.pill, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
-  date: { width: 60, height: 72, borderRadius: 20, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, alignItems: "center", justifyContent: "center" },
-  dateActive: { backgroundColor: colors.yellow, borderColor: colors.yellow },
+  kicker: { ...type.brand, marginTop: 8 },
+  title: { fontSize: 28, fontWeight: "900", color: colors.ink, letterSpacing: -0.5, marginTop: 6 },
+  steps: { flexDirection: "row", gap: 6, marginTop: 14, marginBottom: 4 },
+  stepDot: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.line },
+  stepDotOn: { backgroundColor: colors.yellow },
+  heading: { color: colors.ink, fontSize: 15, fontWeight: "800", marginTop: 26, marginBottom: 12, letterSpacing: 0.2 },
+  horizontal: { gap: 10, paddingRight: 8 },
+  choice: {
+    width: 196,
+    minHeight: 86,
+    justifyContent: "center",
+    padding: 16,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.line,
+    ...shadow.soft,
+  },
+  choiceActive: { borderColor: colors.ink, backgroundColor: colors.ink },
+  choiceTitle: { color: colors.ink, fontWeight: "800", fontSize: 15 },
+  choiceTitleActive: { color: colors.yellowHot },
+  choiceMeta: { color: colors.muted, fontSize: 12, marginTop: 6, fontWeight: "600" },
+  choiceMetaActive: { color: "rgba(255,255,255,0.65)" },
+  smallChoice: {
+    paddingHorizontal: 18,
+    minHeight: 48,
+    justifyContent: "center",
+    borderRadius: radius.pill,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.line,
+  },
+  date: {
+    width: 62,
+    height: 76,
+    borderRadius: 22,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.line,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dateActive: { backgroundColor: colors.yellow, borderColor: colors.yellow, ...shadow.glow },
   weekday: { color: colors.muted, fontSize: 11, fontWeight: "700" },
-  day: { color: colors.ink, fontSize: 21, fontWeight: "900", marginTop: 2 },
-  slots: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  slot: { paddingHorizontal: 17, paddingVertical: 12, borderRadius: radius.pill, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line },
-  slotActive: { backgroundColor: colors.yellow, borderColor: colors.yellow },
+  weekdayActive: { color: colors.ink },
+  day: { color: colors.ink, fontSize: 22, fontWeight: "900", marginTop: 2 },
+  dayActive: { color: colors.ink },
+  slots: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 14 },
+  slot: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.line,
+  },
+  slotActive: { backgroundColor: colors.ink, borderColor: colors.ink },
   slotText: { color: colors.ink, fontSize: 13, fontWeight: "800" },
-  hint: { color: colors.muted, paddingVertical: 12 },
-  summary: { marginTop: 34, paddingTop: 18, borderTopWidth: 1, borderColor: colors.line, flexDirection: "row", alignItems: "center", gap: 18 },
-  summaryLabel: { color: colors.muted, fontSize: 9, fontWeight: "800", letterSpacing: 1 },
-  summaryPrice: { color: colors.ink, fontSize: 20, fontWeight: "900", marginTop: 3 },
+  slotTextActive: { color: colors.yellowHot },
+  hint: { color: colors.muted, paddingVertical: 14, fontWeight: "500" },
+  summary: {
+    marginTop: 36,
+    padding: 18,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.line,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+    ...shadow.card,
+  },
+  summaryLabel: { color: colors.muted, fontSize: 9, fontWeight: "800", letterSpacing: 1.2 },
+  summaryPrice: { color: colors.ink, fontSize: 24, fontWeight: "900", marginTop: 4 },
 });

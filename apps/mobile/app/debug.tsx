@@ -21,7 +21,11 @@ import { colors, radius } from "../src/theme";
 const DEMO_PASSWORD = "Password123!";
 const DEMO_USERS = [
   { label: "Customer", email: "customer@trimly.test", href: "/(customer)" as const },
-  { label: "Owner", email: "owner@trimly.test", href: "/(pro)" as const },
+  { label: "Yellow Chair", email: "yellowchair@trimly.test", href: "/(pro)" as const },
+  { label: "Bombay Blade", email: "bombayblade@trimly.test", href: "/(pro)" as const },
+  { label: "Bandra Cuts", email: "bandracuts@trimly.test", href: "/(pro)" as const },
+  { label: "North Line", email: "northline@trimly.test", href: "/(pro)" as const },
+  { label: "Marine Drive", email: "marinedrive@trimly.test", href: "/(pro)" as const },
 ];
 
 const JUMPS = [
@@ -173,6 +177,28 @@ export default function DebugScreen() {
           title="Haptic test"
           variant="secondary"
           onPress={() => void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)}
+        />
+        <Button
+          title="Reseed shops.json"
+          variant="secondary"
+          loading={busy}
+          onPress={async () => {
+            setBusy(true);
+            try {
+              const { data } = await api.post("/dev/reseed");
+              queryClient.clear();
+              await signOut();
+              Alert.alert(
+                "Reseeded",
+                `${(data.salons as string[] | undefined)?.join("\n") ?? "ok"}\n\nLogin again.`,
+              );
+              router.replace("/auth");
+            } catch (error) {
+              Alert.alert("Reseed failed", getErrorMessage(error));
+            } finally {
+              setBusy(false);
+            }
+          }}
         />
         <Button
           title="Clear query cache"

@@ -24,17 +24,34 @@ export default function ManageStore() {
 
   const createStore = useMutation({
     mutationFn: async () => {
+      const name = store.name.trim();
+      const address = store.address.trim();
+      const city = store.city.trim();
+      const phone = store.phone.replace(/[\s()-]/g, "");
+      const description = store.description.trim();
+      if (name.length < 2) throw new Error("Salon name must be at least 2 characters");
+      if (address.length < 5) throw new Error("Address must be at least 5 characters");
+      if (city.length < 2) throw new Error("City must be at least 2 characters");
+      if (phone.length < 7) throw new Error("Phone must be at least 7 digits");
+
       const permission = await Location.requestForegroundPermissionsAsync();
       const location = permission.status === "granted" ? await Location.getCurrentPositionAsync({}) : null;
       return api.post("/salons", {
-        ...store,
-        latitude: location?.coords.latitude ?? 12.9716,
-        longitude: location?.coords.longitude ?? 77.5946,
+        name,
+        address,
+        city,
+        phone,
+        description,
+        latitude: location?.coords.latitude ?? 19.076,
+        longitude: location?.coords.longitude ?? 72.8777,
         timezone: "Asia/Kolkata",
-        images: [],
+        images: ["https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200"],
       });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["owner-salons"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["owner-salons"] });
+      Alert.alert("Store created", "Add services and staff next.");
+    },
     onError: (error) => Alert.alert("Could not create store", getErrorMessage(error)),
   });
   const addService = useMutation({

@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import type { ColorValue } from "react-native";
+import { Platform } from "react-native";
 import { colors } from "../../src/theme";
 
 export default function ProTabs() {
@@ -8,10 +9,17 @@ export default function ProTabs() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.ink,
-        tabBarInactiveTintColor: "#929292",
-        tabBarStyle: { height: 72, paddingTop: 8, backgroundColor: colors.surface, borderTopColor: colors.line },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "700", paddingBottom: 8 },
+        tabBarActiveTintColor: colors.yellowHot,
+        tabBarInactiveTintColor: "rgba(255,255,255,0.45)",
+        tabBarStyle: {
+          height: Platform.OS === "ios" ? 84 : 72,
+          paddingTop: 10,
+          paddingBottom: Platform.OS === "ios" ? 24 : 12,
+          backgroundColor: colors.ink,
+          borderTopWidth: 0,
+          elevation: 0,
+        },
+        tabBarLabelStyle: { fontSize: 10, fontWeight: "800", letterSpacing: 0.3 },
       }}
     >
       <Tabs.Screen name="index" options={{ title: "Dashboard", tabBarIcon: icon("grid") }} />
