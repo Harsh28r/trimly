@@ -89,7 +89,7 @@ export default function DiscoverScreen() {
       </View>
 
       <Pressable style={styles.promo} onPress={() => void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}>
-        <LinearGradient colors={[colors.ink, "#2A2418"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />
+        <LinearGradient colors={[colors.ink, colors.yellowDeep]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />
         <View style={styles.promoGlow} />
         <View style={{ flex: 1, gap: 6 }}>
           <Text style={styles.promoEyebrow}>INSTANT BOOKING</Text>

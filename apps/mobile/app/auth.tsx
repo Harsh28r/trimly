@@ -43,11 +43,12 @@ export default function AuthScreen() {
     <Screen>
       <View style={styles.hero}>
         <LinearGradient
-          colors={[colors.ink, colors.inkSoft, "#2A2418"]}
+          colors={["#0A0A14", colors.ink, "#151525"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFillObject}
+          style={StyleSheet.absoluteFill}
         />
+        <View style={styles.heroOverlay} />
         <View style={styles.heroGlow} />
         <Text style={styles.brand}>TRIMLY</Text>
         <Text style={styles.title}>{mode === "login" ? "Good hair day?" : "Let’s get you booked."}</Text>
@@ -137,46 +138,50 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: radius.xl,
     borderBottomRightRadius: radius.xl,
   },
+  heroOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
   heroGlow: {
     position: "absolute",
-    width: 220,
-    height: 220,
-    borderRadius: 110,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     backgroundColor: colors.yellow,
-    opacity: 0.18,
+    opacity: 0.3,
     top: -40,
     right: -50,
   },
-  brand: { ...type.brand, color: colors.yellowHot },
-  title: { ...textDisplay({ fontSize: 40, lineHeight: 44, color: "#fff", letterSpacing: -1 }) },
-  copy: { color: "rgba(255,255,255,0.72)", fontSize: 15, lineHeight: 22, maxWidth: 300, fontWeight: "500" },
-  sheet: { marginTop: 28, gap: 22 },
+  brand: { ...type.brand, color: colors.yellowHot, textShadowColor: "rgba(0,0,0,0.3)", textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 },
+  title: { ...textDisplay({ fontSize: 36, lineHeight: 40, color: "#fff", letterSpacing: -0.8 }), textShadowColor: "rgba(0,0,0,0.4)", textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 8 },
+  copy: { color: "rgba(255,255,255,0.9)", fontSize: 14, lineHeight: 20, maxWidth: 280, fontWeight: "500", textShadowColor: "rgba(0,0,0,0.3)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
+  sheet: { marginTop: 24, gap: 20 },
   modeRow: {
     flexDirection: "row",
-    padding: 5,
+    padding: 4,
     borderRadius: radius.pill,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.line,
+    borderColor: colors.lineStrong,
   },
-  mode: { flex: 1, paddingVertical: 12, borderRadius: radius.pill, alignItems: "center" },
+  mode: { flex: 1, paddingVertical: 10, borderRadius: radius.pill, alignItems: "center" },
   modeActive: { backgroundColor: colors.ink, ...shadow.soft },
-  modeText: { color: colors.muted, fontWeight: "800", fontSize: 13 },
+  modeText: { color: colors.muted, fontWeight: "700", fontSize: 12 },
   modeTextActive: { color: colors.yellowHot },
-  form: { gap: 16 },
+  form: { gap: 14 },
   label: { ...type.label, color: colors.inkSoft, marginBottom: -4 },
   roles: { flexDirection: "row", gap: 10 },
   role: {
     flex: 1,
-    paddingVertical: 16,
+    paddingVertical: 14,
     paddingHorizontal: 12,
     borderRadius: radius.sm,
     borderWidth: 1,
-    borderColor: colors.line,
+    borderColor: colors.lineStrong,
     backgroundColor: colors.surface,
     alignItems: "center",
   },
   roleActive: { backgroundColor: colors.ink, borderColor: colors.ink },
-  roleText: { color: colors.ink, fontWeight: "700", fontSize: 13 },
+  roleText: { color: colors.ink, fontWeight: "700", fontSize: 12 },
   roleTextActive: { color: colors.yellowHot },
 });

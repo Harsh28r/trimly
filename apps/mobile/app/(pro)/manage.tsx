@@ -18,7 +18,7 @@ export default function ManageStore() {
     enabled: !!salon,
     queryFn: async () => (await api.get<Detail>(`/salons/${salon!._id}`)).data,
   });
-  const [store, setStore] = useState({ name: "", address: "", city: "", phone: "", description: "" });
+  const [store, setStore] = useState({ name: "", address: "", city: "", phone: "", description: "", zipcode: "", state: "" });
   const [service, setService] = useState({ name: "", price: "", durationMinutes: "45" });
   const [staff, setStaff] = useState({ name: "", title: "Stylist" });
 
@@ -29,16 +29,20 @@ export default function ManageStore() {
       const city = store.city.trim();
       const phone = store.phone.replace(/[\s()-]/g, "");
       const description = store.description.trim();
+      const zipcode = store.zipcode.trim();
+      const state = store.state.trim();
       if (name.length < 2) throw new Error("Salon name must be at least 2 characters");
       if (address.length < 5) throw new Error("Address must be at least 5 characters");
       if (city.length < 2) throw new Error("City must be at least 2 characters");
       if (phone.length < 7) throw new Error("Phone must be at least 7 digits");
+      if (zipcode.length < 5) throw new Error("Zipcode must be at least 5 characters");
+      if (state.length < 2) throw new Error("State must be at least 2 characters");
 
       const permission = await Location.requestForegroundPermissionsAsync();
       const location = permission.status === "granted" ? await Location.getCurrentPositionAsync({}) : null;
       return api.post("/salons", {
         name,
-        address,
+        address: `${address}, ${city}, ${state} ${zipcode}`,
         city,
         phone,
         description,

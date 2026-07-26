@@ -15,9 +15,9 @@ export default function ProfileScreen() {
       <Text style={styles.title}>Profile</Text>
 
       <View style={styles.person}>
-        <LinearGradient colors={[colors.ink, "#2A2418"]} style={StyleSheet.absoluteFillObject} />
+        <LinearGradient colors={[colors.ink, colors.inkSoft]} style={StyleSheet.absoluteFill} />
         <View style={styles.avatar}>
-          <LinearGradient colors={[colors.yellowHot, colors.yellowDeep]} style={StyleSheet.absoluteFillObject} />
+          <LinearGradient colors={[colors.yellowHot, colors.yellowDeep]} style={StyleSheet.absoluteFill} />
           <Text style={styles.initial}>{user?.name[0]}</Text>
         </View>
         <View style={{ flex: 1 }}>
@@ -95,14 +95,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: radius.pill,
-    backgroundColor: "rgba(232,192,74,0.2)",
+    backgroundColor: "rgba(255,184,0,0.25)",
   },
   badgeText: { color: colors.yellowHot, fontSize: 10, fontWeight: "800", textTransform: "uppercase", letterSpacing: 0.8 },
   menu: {
     borderRadius: radius.lg,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.line,
+    borderColor: colors.lineStrong,
     marginBottom: 24,
     overflow: "hidden",
     ...shadow.soft,
@@ -114,13 +114,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.line,
+    borderColor: colors.lineStrong,
   },
   rowIcon: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: colors.yellowSoft,
+    backgroundColor: colors.background,
     alignItems: "center",
     justifyContent: "center",
   },

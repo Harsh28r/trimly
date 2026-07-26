@@ -82,7 +82,7 @@ export function Button({
           <LinearGradient
             colors={[colors.yellowHot, colors.yellow, colors.yellowDeep]}
             start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+            end={{ x: 1, y: 0 }}
             style={StyleSheet.absoluteFillObject}
           />
         )}
@@ -214,11 +214,11 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   content: { flexGrow: 1, paddingHorizontal: 20, paddingBottom: 48 },
   button: {
-    minHeight: 56,
+    minHeight: 54,
     borderRadius: radius.pill,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 26,
+    paddingHorizontal: 28,
     overflow: "hidden",
   },
   buttonPrimary: { ...shadow.glow },
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   buttonGhost: { backgroundColor: "transparent" },
   buttonDark: { backgroundColor: colors.ink, ...shadow.soft },
-  buttonText: { color: colors.ink, fontSize: 16, fontWeight: "800", letterSpacing: 0.2 },
+  buttonText: { color: colors.ink, fontSize: 15, fontWeight: "900", letterSpacing: 0.3 },
   label: { ...type.label, color: colors.inkSoft },
   input: {
     minHeight: 56,
@@ -247,14 +247,14 @@ const styles = StyleSheet.create({
     borderRadius: radius.xl,
     overflow: "hidden",
     backgroundColor: colors.ink,
-    height: 280,
+    height: 260,
     ...shadow.card,
   },
   cardImage: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.inkSoft },
   cardFade: { ...StyleSheet.absoluteFillObject },
-  cardBody: { position: "absolute", left: 18, right: 18, bottom: 18, gap: 6 },
-  cardTitle: { color: "#fff", fontSize: 24, fontWeight: "900", letterSpacing: -0.4 },
-  cardCopy: { color: "rgba(255,255,255,0.78)", fontSize: 13, fontWeight: "600" },
+  cardBody: { position: "absolute", left: 16, right: 16, bottom: 16, gap: 6 },
+  cardTitle: { color: "#fff", fontSize: 22, fontWeight: "900", letterSpacing: -0.3 },
+  cardCopy: { color: "rgba(255,255,255,0.8)", fontSize: 13, fontWeight: "600" },
   rating: {
     alignSelf: "flex-start",
     flexDirection: "row",

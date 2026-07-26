@@ -19,7 +19,7 @@ export async function createTokens(user: { _id: unknown; role: string }) {
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(String(user._id))
     .setIssuedAt()
-    .setExpirationTime(process.env.NODE_ENV === "production" ? "15m" : "12h")
+    .setExpirationTime(process.env.NODE_ENV === "production" ? "15m" : "7d")
     .sign(secret);
   const refreshToken = randomBytes(48).toString("base64url");
   await Session.create({
